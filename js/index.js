@@ -27,26 +27,27 @@ Staff.prototype.calcSalary = function () {
     return this.basicSalary;
   }
 };
-Staff.prototype.rankStaff = function () {
-  if (this.workHour >= 192) {
-    return `Nhân viên xuất sắc`;
-  } else if (this.workHour >= 176) {
-    return `Nhân viên giỏi`;
-  } else if (this.workHour >= 160) {
-    return `Nhân viên khá `;
-  } else if (this.workHour < 160) {
-    return `Nhân viên trung bình `;
+Staff.prototype.rankStaff = function (workHour) {
+  if (workHour >= 192) {
+    return `Xuất sắc`;
+  } else if (workHour >= 176) {
+    return `Giỏi`;
+  } else if (workHour >= 160) {
+    return `Khá `;
+  } else if (workHour < 160) {
+    return `Trung bình `;
   }
 };
-Staff.prototype.getPosition = function () {
-  if (this.position === '1') {
-    return `Sếp`;
-  } else if (this.position === '2') {
-    return `Trưởng phòng `;
-  } else {
-    return `Nhân viên `;
-  }
-};
+// Staff.prototype.getPosition = function () {
+//   if (this.position === '1') {
+//     return `Sếp`;
+//   } else if (this.position === '2') {
+//     return `Trưởng phòng `;
+//   } else {
+//     return `Nhân viên `;
+//   }
+// };
+// Không cần phải làm hàm position, bỏ value trong html sẽ cho ra nội dung của option
 let staffs = [];
 document.getElementById('btnThemNV').addEventListener('click', addStaff);
 function addStaff() {
@@ -55,10 +56,10 @@ function addStaff() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   const dayStart = document.getElementById('datepicker').value;
-  const basicSalary = document.getElementById('luongCB').value;
+  const basicSalary = +document.getElementById('luongCB').value;
   const position = document.getElementById('chucvu').value;
-  const workHour = document.getElementById('gioLam').value;
-  const staff = new Staff(
+  const workHour = +document.getElementById('gioLam').value;
+  let staff = new Staff(
     id,
     name,
     email,
@@ -78,18 +79,19 @@ function display(staffs) {
   for (let i = 0; i < staffs.length; i++) {
     const staff = staffs[i];
     const salary = staff.calcSalary();
+    
     html += `
     <tr>
     <td>${staff.id}</td>
     <td>${staff.name}</td>
     <td>${staff.email}</td>
     <td>${staff.dayStart}</td>
-    <td>${staff.getPosition()}</td>
+    <td>${staff.position}</td>
     <td>${salary.toLocaleString('it-IT', {
       style: 'currency',
       currency: 'VND',
     })}</td>
-    <td>${staff.rankStaff()}</td>
+    <td>${staff.rankStaff(staff.workHour)}</td>
     <button class = "btn btn-success" onclick = "selectStaff('${
       staff.id
     }')"> Cập Nhật </button>
@@ -98,8 +100,8 @@ function display(staffs) {
     }')"> Xóa </button>
     </tr>
     `;
-    tbodyEl.innerHTML = html;
   }
+  tbodyEl.innerHTML = html;
 }
 
 function resetForm() {
@@ -127,16 +129,19 @@ function deleteStaff(staffId) {
   }
 }
 document.getElementById('btnTimNV').addEventListener('click', searchStaff);
+
 function searchStaff() {
-  // const rankOfStaff = rankStaff();
-  const searchEl = document.getElementById('searchName').value;
+  let searchEl = document.getElementById('searchName').value;
+  searchEl = searchEl.toLowerCase()
   let newStaffs = [];
   for (let i = 0; i < staffs.length; i++) {
     let staff = staffs[i];
-    if (staff.rankStaff() === searchEl) {
+    let rankOfStaff = staff.rankStaff(staff.workHour)
+    rankOfStaff = rankOfStaff.toLowerCase()
+    if (rankOfStaff.indexOf(searchEl) !== -1) {
       newStaffs.push(staff);
     }
-  }
+  } 
   display(newStaffs);
 }
 
