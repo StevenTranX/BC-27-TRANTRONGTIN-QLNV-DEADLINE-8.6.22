@@ -85,7 +85,7 @@ function addStaff() {
   staffs.push(staff);
   display(staffs);
   resetForm();
-  document.getElementById('btnThemNV').attributes  = 
+  
 }
 function display(staffs) {
   const tbodyEl = document.getElementById('tableDanhSach');
